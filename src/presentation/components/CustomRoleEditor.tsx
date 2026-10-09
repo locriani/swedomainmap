@@ -1,5 +1,7 @@
-import { useEffect, useId, useMemo, useState } from 'react';
+import { useEffect, useId, useMemo, useRef, useState } from 'react';
 import { CATEGORIES } from '../../data/categories';
+import { filterCategories } from '../../domain/filter';
+import { useFocusTrap } from '../hooks/useFocusTrap';
 
 interface Props {
   open: boolean;
@@ -24,6 +26,12 @@ export function CustomRoleEditor({
 }: Props) {
   const titleId = useId();
   const [filter, setFilter] = useState('');
+  const drawerRef = useRef<HTMLDivElement>(null);
+  const searchRef = useRef<HTMLInputElement>(null);
+
+  // Tab cycles inside the drawer and focus returns to the trigger on close;
+  // Escape stays handled below.
+  useFocusTrap({ active: open, containerRef: drawerRef, initialFocusRef: searchRef });
 
   useEffect(() => {
     if (!open) return;
@@ -34,14 +42,7 @@ export function CustomRoleEditor({
     return () => window.removeEventListener('keydown', handler);
   }, [open, onClose]);
 
-  const filtered = useMemo(() => {
-    const q = filter.trim().toLowerCase();
-    if (!q) return CATEGORIES;
-    return CATEGORIES.map((c) => ({
-      ...c,
-      items: c.items.filter((i) => i.label.toLowerCase().includes(q)),
-    })).filter((c) => c.items.length > 0);
-  }, [filter]);
+  const filtered = useMemo(() => filterCategories(CATEGORIES, filter), [filter]);
 
   if (!open) return null;
 
@@ -57,9 +58,13 @@ export function CustomRoleEditor({
         type="button"
         aria-label="Close custom editor"
         onClick={onClose}
+        tabIndex={-1}
         className="absolute inset-0 bg-slate-950/70 backdrop-blur-sm"
       />
-      <div className="relative w-full max-w-xl h-full bg-slate-950 border-l border-slate-800 flex flex-col shadow-2xl">
+      <div
+        ref={drawerRef}
+        className="relative w-full max-w-xl h-full bg-slate-950 border-l border-slate-800 flex flex-col shadow-2xl"
+      >
         <header className="flex items-center justify-between gap-3 p-4 border-b border-slate-800">
           <div>
             <h2 id={titleId} className="text-slate-100 font-semibold">
@@ -88,6 +93,7 @@ export function CustomRoleEditor({
         </header>
         <div className="p-4 border-b border-slate-800">
           <input
+            ref={searchRef}
             type="search"
             value={filter}
             onChange={(e) => setFilter(e.target.value)}

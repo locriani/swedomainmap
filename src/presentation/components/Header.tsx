@@ -1,7 +1,9 @@
+import type { ReactNode } from 'react';
 import type { Coverage, Level, Role, RoleSelection } from '../../domain/types';
 import { HighlightToggle } from './HighlightToggle';
 import { LevelSelector } from './LevelSelector';
 import { RoleSelector } from './RoleSelector';
+import { ShareLinkButton } from './ShareLinkButton';
 
 interface Props {
   roles: readonly Role[];
@@ -16,6 +18,12 @@ interface Props {
   highlight: boolean;
   onHighlightChange: (next: boolean) => void;
   coverage: Coverage;
+  /**
+   * Self-contained component slot for feature entry points (profile manager,
+   * share links). Each feature ships its own component; Header only reserves
+   * the space — keep this file free of feature logic.
+   */
+  profilesMenu?: ReactNode;
 }
 
 export function Header({
@@ -30,6 +38,7 @@ export function Header({
   highlight,
   onHighlightChange,
   coverage,
+  profilesMenu,
 }: Props) {
   const isCustom = selection?.kind === 'custom';
   const customSize = isCustom ? selection.itemIds.size : 0;
@@ -37,8 +46,9 @@ export function Header({
 
   return (
     <header className="border-b border-slate-800 bg-slate-950/80 backdrop-blur sticky top-0 z-10">
-      <div className="max-w-6xl mx-auto px-6 py-5">
-        <div className="flex items-start justify-between gap-4 flex-wrap">
+      <div className="max-w-6xl mx-auto px-4 py-4 sm:px-6 sm:py-5">
+        {/* Stack title above the controls on small screens, side by side from sm up. */}
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
           <div>
             <h1 className="text-slate-100 text-xl font-semibold">
               Software engineering knowledge domain map
@@ -48,7 +58,7 @@ export function Header({
               that specialty would be expected to know — or build a custom selection of your own.
             </p>
           </div>
-          <div className="flex items-center gap-4 flex-wrap">
+          <div className="flex items-center gap-3 flex-wrap sm:gap-4">
             <RoleSelector
               roles={roles}
               selection={selection}
@@ -59,7 +69,7 @@ export function Header({
               <button
                 type="button"
                 onClick={onEditCustom}
-                className="text-sm rounded-md border border-emerald-500/40 bg-emerald-500/10 text-emerald-300 px-2.5 py-1.5 hover:bg-emerald-500/20"
+                className="text-sm rounded-md border border-emerald-500/40 bg-emerald-500/10 text-emerald-300 px-3 py-2 sm:px-2.5 sm:py-1.5 hover:bg-emerald-500/20"
               >
                 Edit custom ({customSize})
               </button>
@@ -75,6 +85,8 @@ export function Header({
               disabled={selection === null}
               label="Highlight scope"
             />
+            <ShareLinkButton selection={selection} level={level} highlight={highlight} />
+            {profilesMenu}
           </div>
         </div>
         <div className="mt-3 text-sm text-slate-400" data-testid="scope-summary">

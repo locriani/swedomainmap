@@ -13,6 +13,11 @@ interface Props {
   selection: RoleSelection | null;
   level?: Level;
   highlight: boolean;
+  /**
+   * When set (custom selection mode), clicking a pill on the main map toggles
+   * that item's membership — the map itself becomes the editor.
+   */
+  onItemToggle?: (itemId: string) => void;
 }
 
 export function CategoryCard({
@@ -21,6 +26,7 @@ export function CategoryCard({
   selection,
   level = DEFAULT_LEVEL,
   highlight,
+  onItemToggle,
 }: Props) {
   return (
     <section className="rounded-xl border border-slate-800 bg-slate-900/40 p-4">
@@ -45,6 +51,7 @@ export function CategoryCard({
             selection={selection}
             level={level}
             highlight={highlight}
+            onToggle={onItemToggle ? () => onItemToggle(item.id) : undefined}
           />
         ))}
       </div>
