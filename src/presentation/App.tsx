@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { CATEGORIES } from '../data/categories';
 import { ROLES, roleById } from '../data/roles';
 import { filterCategories } from '../domain/filter';
@@ -8,6 +8,7 @@ import { CustomRoleEditor } from './components/CustomRoleEditor';
 import { FirstRunHint } from './components/FirstRunHint';
 import { Header } from './components/Header';
 import { HighlightLegend } from './components/HighlightLegend';
+import { ProfilesMenu } from './components/ProfilesMenu';
 import { SearchBox } from './components/SearchBox';
 import { ShareLinkPreview } from './components/ShareLinkPreview';
 import { useCoverage } from './hooks/useCoverage';
@@ -58,6 +59,15 @@ export function App() {
   // In custom mode the map itself becomes the editor: pills toggle membership.
   const onItemToggle = selection?.kind === 'custom' ? toggleCustomItem : undefined;
 
+  const applyProfileView = useCallback(
+    (view: { selection: RoleSelection | null; level: Level; highlight: boolean }) => {
+      setSelection(view.selection);
+      setLevel(view.level);
+      setHighlight(view.highlight);
+    },
+    [setSelection, setLevel, setHighlight],
+  );
+
   return (
     <div className="min-h-screen bg-slate-950 text-slate-200">
       <Header
@@ -72,6 +82,14 @@ export function App() {
         highlight={highlight}
         onHighlightChange={setHighlight}
         coverage={coverage}
+        profilesMenu={
+          <ProfilesMenu
+            selection={selection}
+            level={level}
+            highlight={highlight}
+            onApply={applyProfileView}
+          />
+        }
       />
 
       <main className="max-w-6xl mx-auto px-4 sm:px-6 py-6">

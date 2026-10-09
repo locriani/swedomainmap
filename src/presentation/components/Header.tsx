@@ -1,3 +1,4 @@
+import type { ReactNode } from 'react';
 import type { Coverage, Level, Role, RoleSelection } from '../../domain/types';
 import { HighlightToggle } from './HighlightToggle';
 import { LevelSelector } from './LevelSelector';
@@ -17,6 +18,12 @@ interface Props {
   highlight: boolean;
   onHighlightChange: (next: boolean) => void;
   coverage: Coverage;
+  /**
+   * Self-contained component slot for feature entry points (profile manager,
+   * share links). Each feature ships its own component; Header only reserves
+   * the space — keep this file free of feature logic.
+   */
+  profilesMenu?: ReactNode;
 }
 
 export function Header({
@@ -31,6 +38,7 @@ export function Header({
   highlight,
   onHighlightChange,
   coverage,
+  profilesMenu,
 }: Props) {
   const isCustom = selection?.kind === 'custom';
   const customSize = isCustom ? selection.itemIds.size : 0;
@@ -78,6 +86,7 @@ export function Header({
               label="Highlight scope"
             />
             <ShareLinkButton selection={selection} level={level} highlight={highlight} />
+            {profilesMenu}
           </div>
         </div>
         <div className="mt-3 text-sm text-slate-400" data-testid="scope-summary">
