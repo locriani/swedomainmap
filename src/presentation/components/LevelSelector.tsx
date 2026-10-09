@@ -34,7 +34,7 @@ export function LevelSelector({ value, onChange, disabled }: Props) {
               disabled={disabled}
               onClick={() => onChange(l)}
               data-testid={`level-${l}`}
-              className={`px-2.5 py-1.5 text-xs font-medium transition-colors ${
+              className={`px-3 py-2 text-xs font-medium transition-colors sm:px-2.5 sm:py-1.5 ${
                 active
                   ? 'bg-emerald-500 text-slate-950'
                   : 'bg-slate-900 text-slate-300 hover:bg-slate-800'

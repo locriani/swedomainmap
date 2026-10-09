@@ -1,5 +1,5 @@
-import { render, screen } from '@testing-library/react';
-import { describe, expect, it } from 'vitest';
+import { fireEvent, render, screen } from '@testing-library/react';
+import { describe, expect, it, vi } from 'vitest';
 import { CategoryCard } from './CategoryCard';
 import type { Category, RoleSelection } from '../../domain/types';
 
@@ -74,6 +74,33 @@ describe('CategoryCard', () => {
     const go = pills.find((p) => p.textContent === 'Go');
     expect(swift).toHaveAttribute('data-in-scope', 'true');
     expect(go).toHaveAttribute('data-in-scope', 'false');
+  });
+
+  it('makes pills toggleable and passes item ids when onItemToggle is provided', () => {
+    const onItemToggle = vi.fn();
+    render(
+      <CategoryCard
+        category={cat}
+        coverage={{ categoryId: 'lang', total: 3, scoped: 0 }}
+        selection={{ kind: 'custom', itemIds: new Set() }}
+        highlight={false}
+        onItemToggle={onItemToggle}
+      />,
+    );
+    fireEvent.click(screen.getByRole('button', { name: 'Swift' }));
+    expect(onItemToggle).toHaveBeenCalledWith('swift');
+  });
+
+  it('keeps pills non-interactive when onItemToggle is absent', () => {
+    render(
+      <CategoryCard
+        category={cat}
+        coverage={{ categoryId: 'lang', total: 3, scoped: 0 }}
+        selection={null}
+        highlight={false}
+      />,
+    );
+    expect(screen.getByText('Swift').closest('button')).toBeNull();
   });
 
   it('marks pills correctly for a custom selection', () => {

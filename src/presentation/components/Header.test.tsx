@@ -195,4 +195,22 @@ describe('Header', () => {
       screen.getAllByRole('radio', { name: /Mid/i }).every((b) => !b.hasAttribute('disabled')),
     ).toBe(true);
   });
+
+  it('stacks the title above the controls on small screens', () => {
+    render(
+      <Header
+        roles={roles}
+        selection={null}
+        selectedRoleObj={null}
+        highlight={false}
+        coverage={coverage(0, 100)}
+        {...noopProps}
+      />,
+    );
+    // jsdom has no layout engine, so this pins the responsive contract at the
+    // class level; visual wrapping is verified in browser QA.
+    const banner = screen.getByRole('banner');
+    const stack = banner.firstElementChild?.firstElementChild as HTMLElement;
+    expect(stack).toHaveClass('flex-col', 'sm:flex-row');
+  });
 });

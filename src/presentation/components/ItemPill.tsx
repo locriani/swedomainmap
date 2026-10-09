@@ -10,11 +10,19 @@ interface Props {
   selection: RoleSelection | null;
   level?: Level;
   highlight: boolean;
+  /**
+   * When provided, the pill renders as a toggle button (custom mode: the main
+   * map doubles as the editor, so the drawer isn't the only way to edit).
+   * Membership is then always visible, even with the highlight toggle off —
+   * an editor that hides which items are picked isn't usable.
+   */
+  onToggle?: () => void;
 }
 
-export function ItemPill({ item, selection, level = DEFAULT_LEVEL, highlight }: Props) {
+export function ItemPill({ item, selection, level = DEFAULT_LEVEL, highlight, onToggle }: Props) {
   const { inScope, future } = isItemInScope(item, selection, level);
-  const showHighlight = highlight && selection !== null;
+  const interactive = onToggle !== undefined;
+  const showHighlight = (highlight || interactive) && selection !== null;
 
   // Per design research: in-scope items at full color, future items dimmed
   // with a small "earned-at-L_n" badge for discoverability. Out-of-scope
@@ -34,14 +42,8 @@ export function ItemPill({ item, selection, level = DEFAULT_LEVEL, highlight }: 
       ? shortLevel(effectiveLevel(item, selection.id))
       : null;
 
-  return (
-    <span
-      className={`inline-flex items-center gap-1 text-xs px-2.5 py-1 rounded-full border transition-all duration-200 ${cls}`}
-      data-testid="item-pill"
-      data-item-id={item.id}
-      data-in-scope={inScope}
-      data-future={future}
-    >
+  const content = (
+    <>
       <span>{item.label}</span>
       {futureBadge && (
         <span
@@ -51,6 +53,36 @@ export function ItemPill({ item, selection, level = DEFAULT_LEVEL, highlight }: 
           {futureBadge}
         </span>
       )}
+    </>
+  );
+
+  const stateProps = {
+    'data-testid': 'item-pill',
+    'data-item-id': item.id,
+    'data-in-scope': inScope,
+    'data-future': future,
+  } as const;
+
+  if (interactive) {
+    return (
+      <button
+        type="button"
+        onClick={onToggle}
+        aria-pressed={inScope}
+        className={`inline-flex items-center gap-1 text-xs px-2.5 py-1 rounded-full border transition-all duration-200 text-left cursor-pointer hover:ring-1 hover:ring-emerald-400/50 focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400 ${cls}`}
+        {...stateProps}
+      >
+        {content}
+      </button>
+    );
+  }
+
+  return (
+    <span
+      className={`inline-flex items-center gap-1 text-xs px-2.5 py-1 rounded-full border transition-all duration-200 ${cls}`}
+      {...stateProps}
+    >
+      {content}
     </span>
   );
 }
