@@ -39,7 +39,7 @@ export function RoleSelector({
           const match = roles.find((r) => r.id === v);
           if (match) onPredefinedChange(match.id);
         }}
-        className="bg-slate-900 border border-slate-700 text-slate-200 rounded-md px-2 py-1.5 text-sm focus:outline-none focus:border-emerald-500"
+        className="bg-slate-900 border border-slate-700 text-slate-200 rounded-md px-2 py-2 sm:py-1.5 text-sm max-w-full focus:outline-none focus:border-emerald-500"
       >
         <option value="">— None —</option>
         <option value={CUSTOM_OPTION_VALUE}>★ Custom selection</option>
