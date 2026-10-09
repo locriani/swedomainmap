@@ -2,13 +2,14 @@ import { useMemo, useState } from 'react';
 import { CATEGORIES } from '../data/categories';
 import { ROLES, roleById } from '../data/roles';
 import { filterCategories } from '../domain/filter';
-import type { RoleId } from '../domain/types';
+import type { Level, RoleId, RoleSelection } from '../domain/types';
 import { CategoryCard } from './components/CategoryCard';
 import { CustomRoleEditor } from './components/CustomRoleEditor';
 import { FirstRunHint } from './components/FirstRunHint';
 import { Header } from './components/Header';
 import { HighlightLegend } from './components/HighlightLegend';
 import { SearchBox } from './components/SearchBox';
+import { ShareLinkPreview } from './components/ShareLinkPreview';
 import { useCoverage } from './hooks/useCoverage';
 import { useRoleSelection } from './hooks/useRoleSelection';
 
@@ -39,6 +40,12 @@ export function App() {
   const handleCustomChosen = () => {
     if (selection?.kind !== 'custom') startCustom();
     setEditorOpen(true);
+  };
+
+  const handleShareApply = (shareSel: RoleSelection, shareLevel: Level, shareHighlight: boolean) => {
+    setSelection(shareSel);
+    setLevel(shareLevel);
+    setHighlight(shareHighlight);
   };
 
   const customItemIds: ReadonlySet<string> =
@@ -123,6 +130,8 @@ export function App() {
         onClear={clearCustom}
         onClose={() => setEditorOpen(false)}
       />
+
+      <ShareLinkPreview onApply={handleShareApply} />
     </div>
   );
 }
