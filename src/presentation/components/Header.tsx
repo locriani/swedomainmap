@@ -2,6 +2,7 @@ import type { Coverage, Level, Role, RoleSelection } from '../../domain/types';
 import { HighlightToggle } from './HighlightToggle';
 import { LevelSelector } from './LevelSelector';
 import { RoleSelector } from './RoleSelector';
+import { ShareLinkButton } from './ShareLinkButton';
 
 interface Props {
   roles: readonly Role[];
@@ -76,6 +77,7 @@ export function Header({
               disabled={selection === null}
               label="Highlight scope"
             />
+            <ShareLinkButton selection={selection} level={level} highlight={highlight} />
           </div>
         </div>
         <div className="mt-3 text-sm text-slate-400" data-testid="scope-summary">
